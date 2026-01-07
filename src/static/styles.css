@@ -74,6 +74,88 @@ section h3 {
   margin-bottom: 8px;
 }
 
+/* Participants list styling */
+.participants {
+  margin-top: 12px;
+}
+
+.participants h5 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #1a237e;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.count-badge {
+  background: linear-gradient(180deg,#e8eaf6,#c5cae9);
+  color: #1a237e;
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid rgba(26,35,126,0.08);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset;
+}
+
+.participants-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 8px 0 0 0;
+  max-height: 120px;
+  overflow: auto;
+  background: #ffffff;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px dashed #f1f1f1;
+}
+
+.participant-item:last-child {
+  border-bottom: none;
+}
+
+.participant-empty {
+  padding: 10px 12px;
+  color: #666;
+  font-size: 14px;
+  background: #fafafa;
+  border-radius: 4px;
+  border: 1px dashed #f0f0f0;
+}
+
+/* delete button for participant items */
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #c62828;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.delete-btn:hover {
+  background: rgba(198,40,40,0.08);
+}
+
+/* Availability / spots left styling */
+.spots-left {
+  font-weight: 600;
+  color: #424242;
+}
+
 .form-group {
   margin-bottom: 15px;
 }
