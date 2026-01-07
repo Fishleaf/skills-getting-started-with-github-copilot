@@ -101,8 +101,8 @@ section h3 {
 }
 
 .participants-list {
-  list-style: disc;
-  padding-left: 18px;
+  list-style: none;
+  padding-left: 0;
   margin: 8px 0 0 0;
   max-height: 120px;
   overflow: auto;
@@ -114,6 +114,9 @@ section h3 {
 }
 
 .participant-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 6px 12px;
   font-size: 14px;
   color: #333;
@@ -131,6 +134,20 @@ section h3 {
   background: #fafafa;
   border-radius: 4px;
   border: 1px dashed #f0f0f0;
+}
+
+/* delete button for participant items */
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #c62828;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.delete-btn:hover {
+  background: rgba(198,40,40,0.08);
 }
 
 /* Availability / spots left styling */

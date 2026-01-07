@@ -5,6 +5,69 @@ document.addEventListener("DOMContentLoaded", () => {
   const messageDiv = document.getElementById("message");
   const uiMap = {};
 
+  async function unregisterParticipant(activity, email, li, ui) {
+    try {
+      const res = await fetch(`/activities/${encodeURIComponent(activity)}/unregister?email=${encodeURIComponent(email)}`, { method: "DELETE" });
+      const json = await res.json();
+      if (!res.ok) {
+        showMessage(json.detail || "Failed to remove participant", "error");
+        return;
+      }
+
+      // remove from UI
+      if (li && li.parentNode) li.parentNode.removeChild(li);
+
+      if (ui) {
+        // update badge
+        ui.badge.textContent = String(Math.max(0, (parseInt(ui.badge.textContent || "0", 10) || 0) - 1));
+
+        // update spots left
+        const match = (ui.spotsLeftEl.textContent || "").match(/(\d+)/);
+        if (match) {
+          const newSpots = parseInt(match[1], 10) + 1;
+          ui.spotsLeftEl.textContent = `${newSpots} spots left`;
+        }
+
+        // if no participants remain, show empty message
+        const ul = ui.participantsWrap.querySelector(".participants-list");
+        if (!ul || ul.children.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "participant-empty";
+          empty.textContent = "No participants yet.";
+          if (ul && ul.parentNode) ul.parentNode.replaceChild(empty, ul);
+          else ui.participantsWrap.appendChild(empty);
+        }
+      }
+
+      showMessage(json.message || `Unregistered ${email}`, "success");
+    } catch (err) {
+      console.error(err);
+      showMessage("Failed to unregister participant.", "error");
+    }
+  }
+
+  function createParticipantListItem(email, activityName, ui) {
+    const li = document.createElement("li");
+    li.className = "participant-item";
+
+    const span = document.createElement("span");
+    span.textContent = email;
+    span.className = "participant-email";
+
+    const btn = document.createElement("button");
+    btn.className = "delete-btn";
+    btn.title = "Remove participant";
+    btn.textContent = "✖";
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      unregisterParticipant(activityName, email, li, ui);
+    });
+
+    li.appendChild(span);
+    li.appendChild(btn);
+    return li;
+  }
+
   function showMessage(text, cls = "error") {
     messageDiv.textContent = text;
     messageDiv.className = `message ${cls}`;
@@ -44,9 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const ul = document.createElement("ul");
           ul.className = "participants-list";
           participants.forEach(p => {
-            const li = document.createElement("li");
-            li.className = "participant-item";
-            li.textContent = p;
+            const li = createParticipantListItem(p, name, uiMap[name]);
             ul.appendChild(li);
           });
           participantsWrap.appendChild(ul);
@@ -99,30 +160,8 @@ document.addEventListener("DOMContentLoaded", () => {
       showMessage(json.message || "Signed up!", "success");
       signupForm.reset();
 
-      const ui = uiMap[activity];
-      if (ui) {
-        const empty = ui.participantsWrap.querySelector(".participant-empty");
-        if (empty) empty.remove();
-
-        let ul = ui.participantsWrap.querySelector(".participants-list");
-        if (!ul) {
-          ul = document.createElement("ul");
-          ul.className = "participants-list";
-          ui.participantsWrap.appendChild(ul);
-        }
-        const li = document.createElement("li");
-        li.className = "participant-item";
-        li.textContent = email;
-        ul.appendChild(li);
-
-        ui.badge.textContent = String((parseInt(ui.badge.textContent || "0", 10) || 0) + 1);
-
-        const match = (ui.spotsLeftEl.textContent || "").match(/(\d+)/);
-        if (match) {
-          const newSpots = Math.max(0, parseInt(match[1], 10) - 1);
-          ui.spotsLeftEl.textContent = `${newSpots} spots left`;
-        }
-      }
+      // Refresh activities from server to ensure UI matches backend
+      await fetchActivities();
     } catch (err) {
       showMessage("Failed to sign up. Please try again.", "error");
       console.error(err);
